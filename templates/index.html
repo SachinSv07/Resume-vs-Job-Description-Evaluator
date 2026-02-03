@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume vs Job Description Evaluator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>🎯 Resume vs Job Description Evaluator</h1>
+            <p class="subtitle">AI-powered candidate evaluation using semantic similarity analysis</p>
+        </header>
+
+        <!-- Input Section -->
+        <div class="input-section">
+            <div class="input-group">
+                <label for="jobDescription">
+                    <strong>Job Description</strong>
+                    <span class="hint">Paste the complete job posting or requirements</span>
+                </label>
+                <textarea 
+                    id="jobDescription" 
+                    placeholder="Enter the job description here...&#10;&#10;Example:&#10;We are looking for a Senior Python Developer with 5+ years of experience in Flask, Django, and REST APIs. Must have strong knowledge of SQL databases, Docker, and cloud platforms like AWS..."
+                    rows="10"
+                ></textarea>
+            </div>
+
+            <div class="input-group">
+                <label for="resume">
+                    <strong>Candidate Resume</strong>
+                    <span class="hint">Paste the candidate's resume or CV</span>
+                </label>
+                <textarea 
+                    id="resume" 
+                    placeholder="Enter the candidate's resume here...&#10;&#10;Example:&#10;John Doe&#10;Software Engineer&#10;&#10;Experience:&#10;- Senior Python Developer at TechCorp (2019-2024)&#10;- Built REST APIs using Flask and FastAPI&#10;- Worked with PostgreSQL and MongoDB&#10;- Deployed applications on AWS using Docker..."
+                    rows="10"
+                ></textarea>
+            </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="action-section">
+            <button id="evaluateBtn" class="evaluate-btn">
+                <span class="btn-text">Evaluate Fit</span>
+                <span class="btn-icon">→</span>
+            </button>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="loading-indicator hidden">
+            <div class="spinner"></div>
+            <p>Analyzing with AI... Please wait</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="error-message hidden"></div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="results-section hidden">
+            <h2>📊 Evaluation Results</h2>
+
+            <!-- Match Score -->
+            <div class="score-container">
+                <div class="score-circle" id="scoreCircle">
+                    <div class="score-value" id="scoreValue">0</div>
+                    <div class="score-label">Match Score</div>
+                </div>
+                <div class="verdict-container">
+                    <div class="verdict-badge" id="verdictBadge">-</div>
+                    <p class="verdict-label">Hiring Verdict</p>
+                </div>
+            </div>
+
+            <!-- Detailed Analysis -->
+            <div class="analysis-grid">
+                <!-- Strengths -->
+                <div class="analysis-card strengths-card">
+                    <h3>✅ Strengths</h3>
+                    <ul id="strengthsList"></ul>
+                </div>
+
+                <!-- Gaps -->
+                <div class="analysis-card gaps-card">
+                    <h3>⚠️ Gaps</h3>
+                    <ul id="gapsList"></ul>
+                </div>
+
+                <!-- Reasons For -->
+                <div class="analysis-card reasons-for-card">
+                    <h3>👍 Reasons Supporting Verdict</h3>
+                    <ul id="reasonsForList"></ul>
+                </div>
+
+                <!-- Reasons Against -->
+                <div class="analysis-card reasons-against-card">
+                    <h3>👎 Reasons Against Verdict</h3>
+                    <ul id="reasonsAgainstList"></ul>
+                </div>
+            </div>
+
+            <!-- Improvement Suggestions -->
+            <div class="suggestions-container">
+                <h3>💡 Improvement Suggestions</h3>
+                <div id="suggestionsList" class="suggestions-list"></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>Powered by Hugging Face Sentence Transformers (all-MiniLM-L6-v2)</p>
+            <p class="disclaimer">This evaluation is AI-generated and should be used as one input in your hiring decision process.</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
