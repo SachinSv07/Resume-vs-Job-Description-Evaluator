@@ -21,6 +21,31 @@ const reasonsForList = document.getElementById('reasonsForList');
 const reasonsAgainstList = document.getElementById('reasonsAgainstList');
 const suggestionsList = document.getElementById('suggestionsList');
 
+// Intersection Observer for scroll animations
+const observerOptions = {
+    root: null,
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const fadeInObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('fade-in-visible');
+        }
+    });
+}, observerOptions);
+
+// Apply fade-in animations to elements
+function initScrollAnimations() {
+    const animatedElements = document.querySelectorAll('.analysis-card, .suggestions-container');
+    animatedElements.forEach((el, index) => {
+        el.style.transitionDelay = `${index * 100}ms`;
+        el.classList.add('fade-in-element');
+        fadeInObserver.observe(el);
+    });
+}
+
 /**
  * Show error message to user
  */
@@ -103,38 +128,46 @@ function createSuggestionItems(suggestions, parentElement) {
 }
 
 /**
- * Animate score counter
+ * Animate score counter with easing
  */
 function animateScore(targetScore) {
     let currentScore = 0;
-    const increment = targetScore / 50; // Will take 50 steps
-    const duration = 1500; // 1.5 seconds
-    const stepTime = duration / 50;
+    const duration = 2000; // 2 seconds for smooth animation
+    const startTime = performance.now();
     
-    const timer = setInterval(() => {
-        currentScore += increment;
-        if (currentScore >= targetScore) {
-            currentScore = targetScore;
-            clearInterval(timer);
-        }
+    // Easing function (ease-out-cubic)
+    const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+    
+    function updateScore(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easedProgress = easeOutCubic(progress);
+        
+        currentScore = easedProgress * targetScore;
         scoreValue.textContent = Math.round(currentScore);
         
-        // Update color based on score
+        // Update color based on score with smooth transition
         if (currentScore >= 75) {
-            scoreValue.style.color = '#34c759';
+            scoreValue.style.color = '#10b981';
         } else if (currentScore >= 50) {
-            scoreValue.style.color = '#ffc107';
+            scoreValue.style.color = '#f59e0b';
         } else {
-            scoreValue.style.color = '#dc3545';
+            scoreValue.style.color = '#ef4444';
         }
-    }, stepTime);
+        
+        if (progress < 1) {
+            requestAnimationFrame(updateScore);
+        }
+    }
+    
+    requestAnimationFrame(updateScore);
 }
 
 /**
  * Display evaluation results
  */
 function displayResults(data) {
-    // Animate score
+    // Animate score with easing
     animateScore(data.match_score);
     
     // Display verdict with appropriate styling
@@ -168,8 +201,15 @@ function displayResults(data) {
     hideLoading();
     resultsSection.classList.remove('hidden');
     
-    // Smooth scroll to results
-    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    // Initialize scroll animations
+    setTimeout(() => {
+        initScrollAnimations();
+    }, 100);
+    
+    // Smooth scroll to results with offset
+    setTimeout(() => {
+        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
 }
 
 /**

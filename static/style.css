@@ -16,6 +16,7 @@ body {
     min-height: 100vh;
     padding: 60px 20px;
     font-weight: 400;
+    overflow-x: hidden;
 }
 
 .container {
@@ -23,6 +24,19 @@ body {
     margin: 0 auto;
     background: transparent;
     padding: 0;
+    opacity: 0;
+    animation: containerFadeIn 800ms ease-out forwards;
+}
+
+@keyframes containerFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* ===========================
@@ -34,6 +48,21 @@ header {
     margin-bottom: 80px;
     padding-bottom: 0;
     border: none;
+    opacity: 0;
+    animation: headerSlideIn 1000ms cubic-bezier(0.16, 1, 0.3, 1) 200ms forwards;
+}
+
+@keyframes headerSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+        filter: blur(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
 }
 
 header h1 {
@@ -60,6 +89,19 @@ header h1 {
     grid-template-columns: 1fr 1fr;
     gap: 40px;
     margin-bottom: 60px;
+    opacity: 0;
+    animation: fadeInUp 1000ms cubic-bezier(0.16, 1, 0.3, 1) 400ms forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .input-group {
@@ -87,21 +129,23 @@ textarea {
     padding: 20px;
     border: none;
     border-radius: 12px;
-    background: #f7f7f7;
+    background: rgba(247, 247, 247, 0.8);
+    backdrop-filter: blur(10px);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif;
     font-size: 0.9375rem;
     color: #111827;
     resize: vertical;
-    transition: all 300ms ease;
+    transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
     line-height: 1.6;
 }
 
 textarea:focus {
     outline: none;
-    background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
-    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.08), 0 8px 24px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px) scale(1.005);
 }
 
 textarea::placeholder {
@@ -115,6 +159,8 @@ textarea::placeholder {
 .action-section {
     text-align: center;
     margin-bottom: 60px;
+    opacity: 0;
+    animation: fadeInUp 1000ms cubic-bezier(0.16, 1, 0.3, 1) 600ms forwards;
 }
 
 .evaluate-btn {
@@ -129,19 +175,40 @@ textarea::placeholder {
     display: inline-flex;
     align-items: center;
     gap: 12px;
-    transition: all 300ms ease;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+    transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
     letter-spacing: -0.01em;
+    position: relative;
+    overflow: hidden;
+}
+
+.evaluate-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    transform: translate(-50%, -50%);
+    transition: width 600ms ease, height 600ms ease;
+}
+
+.evaluate-btn:hover::before {
+    width: 300px;
+    height: 300px;
 }
 
 .evaluate-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.25);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 28px rgba(59, 130, 246, 0.35);
     background: #2563eb;
 }
 
 .evaluate-btn:active {
-    transform: translateY(0);
+    transform: translateY(-1px) scale(1);
+    transition: all 150ms ease;
 }
 
 .evaluate-btn:disabled {
@@ -152,11 +219,18 @@ textarea::placeholder {
 
 .btn-icon {
     font-size: 1.25rem;
-    transition: transform 300ms ease;
+    transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    z-index: 1;
 }
 
 .evaluate-btn:hover .btn-icon {
-    transform: translateX(4px);
+    transform: translateX(6px);
+}
+
+.btn-text {
+    position: relative;
+    z-index: 1;
 }
 
 /* ===========================
@@ -166,26 +240,40 @@ textarea::placeholder {
 .loading-indicator {
     text-align: center;
     padding: 60px 40px;
-    background: rgba(247, 247, 247, 0.6);
-    backdrop-filter: blur(10px);
-    border-radius: 16px;
+    background: rgba(247, 247, 247, 0.5);
+    backdrop-filter: blur(16px);
+    border-radius: 20px;
     margin-bottom: 60px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    animation: pulseGlow 2000ms ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    }
+    50% {
+        box-shadow: 0 8px 32px rgba(59, 130, 246, 0.12);
+    }
 }
 
 .spinner {
-    border: 3px solid #f7f7f7;
+    border: 3px solid rgba(247, 247, 247, 0.3);
     border-top: 3px solid #3b82f6;
     border-radius: 50%;
     width: 48px;
     height: 48px;
-    animation: spin 1s linear infinite;
+    animation: spin 1000ms cubic-bezier(0.4, 0, 0.6, 1) infinite;
     margin: 0 auto 24px;
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% { 
+        transform: rotate(0deg);
+    }
+    100% { 
+        transform: rotate(360deg);
+    }
 }
 
 .loading-indicator p {
@@ -223,17 +311,19 @@ textarea::placeholder {
    =========================== */
 
 .results-section {
-    animation: fadeIn 600ms ease;
+    animation: resultsReveal 800ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes fadeIn {
+@keyframes resultsReveal {
     from {
         opacity: 0;
-        transform: translateY(16px);
+        transform: translateY(40px);
+        filter: blur(8px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
+        filter: blur(0);
     }
 }
 
@@ -257,29 +347,36 @@ textarea::placeholder {
     gap: 80px;
     margin-bottom: 60px;
     padding: 48px;
-    background: rgba(247, 247, 247, 0.5);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    background: rgba(247, 247, 247, 0.4);
+    backdrop-filter: blur(16px);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+    transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.score-container:hover {
+    background: rgba(247, 247, 247, 0.6);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
 }
 
 .score-circle {
     width: 200px;
     height: 200px;
     border-radius: 50%;
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
     position: relative;
-    transition: all 300ms ease;
+    transition: all 500ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .score-circle:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
 }
 
 .score-value {
@@ -287,6 +384,7 @@ textarea::placeholder {
     font-weight: 600;
     color: #3b82f6;
     letter-spacing: -0.03em;
+    transition: all 500ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .score-label {
@@ -306,14 +404,31 @@ textarea::placeholder {
     font-size: 1.75rem;
     font-weight: 600;
     border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     letter-spacing: -0.01em;
-    transition: all 300ms ease;
+    transition: all 500ms cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.verdict-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 600ms ease;
+}
+
+.verdict-badge:hover::before {
+    left: 100%;
 }
 
 .verdict-badge:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
 }
 
 .verdict-badge.hire {
@@ -350,17 +465,32 @@ textarea::placeholder {
 }
 
 .analysis-card {
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
     border-radius: 16px;
     padding: 32px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-    transition: all 300ms ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    transition: all 500ms cubic-bezier(0.16, 1, 0.3, 1);
     border: none;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.analysis-card.fade-in-element {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.analysis-card.fade-in-visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .analysis-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(16px);
 }
 
 .analysis-card h3 {
@@ -416,16 +546,29 @@ textarea::placeholder {
 
 .suggestions-container {
     background: rgba(59, 130, 246, 0.04);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
     border-radius: 16px;
     padding: 32px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
-    transition: all 300ms ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+    transition: all 500ms cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.suggestions-container.fade-in-element {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.suggestions-container.fade-in-visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .suggestions-container:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.1);
+    background: rgba(59, 130, 246, 0.06);
 }
 
 .suggestions-container h3 {
@@ -443,7 +586,8 @@ textarea::placeholder {
 }
 
 .suggestion-item {
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
     padding: 20px;
     border-radius: 12px;
     border-left: 3px solid #3b82f6;
@@ -451,12 +595,14 @@ textarea::placeholder {
     color: #4b5563;
     font-size: 0.9375rem;
     line-height: 1.65;
-    transition: all 300ms ease;
+    transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .suggestion-item:hover {
-    transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transform: translateX(8px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.95);
+    border-left-color: #2563eb;
 }
 
 /* ===========================
@@ -511,10 +657,22 @@ footer p {
         margin-bottom: 48px;
     }
 
+    textarea {
+        backdrop-filter: blur(8px);
+    }
+
+    textarea:focus {
+        transform: translateY(-1px) scale(1);
+    }
+
     .score-container {
         flex-direction: column;
         gap: 40px;
         padding: 40px 24px;
+    }
+
+    .score-circle:hover {
+        transform: translateY(-3px) scale(1.02);
     }
 
     .analysis-grid {
@@ -522,9 +680,17 @@ footer p {
         gap: 20px;
     }
 
+    .analysis-card:hover {
+        transform: translateY(-3px) scale(1.01);
+    }
+
     .evaluate-btn {
         padding: 14px 36px;
         font-size: 1rem;
+    }
+
+    .evaluate-btn:hover {
+        transform: translateY(-2px) scale(1.01);
     }
 
     .score-circle {
@@ -539,5 +705,9 @@ footer p {
     .verdict-badge {
         font-size: 1.5rem;
         padding: 14px 36px;
+    }
+
+    .verdict-badge:hover {
+        transform: translateY(-2px) scale(1.02);
     }
 }
