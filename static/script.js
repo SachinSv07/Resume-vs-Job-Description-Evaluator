@@ -10,6 +10,7 @@ const evaluateBtn = document.getElementById('evaluateBtn');
 const loadingIndicator = document.getElementById('loadingIndicator');
 const errorMessage = document.getElementById('errorMessage');
 const resultsSection = document.getElementById('resultsSection');
+const themeToggle = document.getElementById('themeToggle');
 
 // Result elements
 const scoreValue = document.getElementById('scoreValue');
@@ -20,6 +21,24 @@ const gapsList = document.getElementById('gapsList');
 const reasonsForList = document.getElementById('reasonsForList');
 const reasonsAgainstList = document.getElementById('reasonsAgainstList');
 const suggestionsList = document.getElementById('suggestionsList');
+
+const THEME_STORAGE_KEY = 'rjd-theme';
+
+function applyTheme(theme) {
+    const isDark = theme === 'dark';
+    document.body.classList.toggle('dark', isDark);
+    if (themeToggle) {
+        themeToggle.textContent = isDark ? 'Light mode' : 'Dark mode';
+        themeToggle.setAttribute('aria-pressed', String(isDark));
+    }
+}
+
+function initTheme() {
+    const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = storedTheme || (prefersDark ? 'dark' : 'light');
+    applyTheme(initialTheme);
+}
 
 // Intersection Observer for scroll animations
 const observerOptions = {
@@ -267,6 +286,15 @@ async function evaluateResume() {
 // Evaluate button click
 evaluateBtn.addEventListener('click', evaluateResume);
 
+// Theme toggle
+if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+        const nextTheme = document.body.classList.contains('dark') ? 'light' : 'dark';
+        localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+        applyTheme(nextTheme);
+    });
+}
+
 // Allow Enter key in textareas (with Ctrl/Cmd for submission)
 document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
@@ -277,6 +305,9 @@ document.addEventListener('keydown', (e) => {
 // Hide error when user starts typing
 jobDescriptionTextarea.addEventListener('input', hideError);
 resumeTextarea.addEventListener('input', hideError);
+
+// Initialize theme and default UI state
+initTheme();
 
 // Initialize - hide results on page load
 resultsSection.classList.add('hidden');
