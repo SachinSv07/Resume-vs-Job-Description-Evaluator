@@ -1,7 +1,11 @@
 /**
- * Resume vs Job Description Evaluator - Frontend Logic
+ * FitMatch - Frontend Logic
+ * Intelligent resume-to-job matching powered by AI
  * Handles user interactions and API communication
  */
+
+// Register GSAP ScrollTrigger
+gsap.registerPlugin(ScrollTrigger);
 
 // DOM Elements
 const jobDescriptionTextarea = document.getElementById('jobDescription');
@@ -55,6 +59,289 @@ const fadeInObserver = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
+const scrollRevealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            scrollRevealObserver.unobserve(entry.target);
+        }
+    });
+}, observerOptions);
+
+// Initialize GSAP animations
+function initGsapAnimations() {
+    // Hero load sequence - chained animations with overlapping start times
+    const heroTimeline = gsap.timeline();
+    heroTimeline
+        .fromTo('.hero-title', 
+            { opacity: 0, y: 60, scale: 0.95 },
+            { opacity: 1, y: 0, scale: 1, duration: 1, ease: 'power3.out' },
+            0
+        )
+        .fromTo('.hero-tagline',
+            { opacity: 0, y: 40 },
+            { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' },
+            0.15
+        )
+        .fromTo('.hero-cta',
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' },
+            0.3
+        );
+
+    // Pin hero section while scrolling
+    ScrollTrigger.create({
+        trigger: '.hero',
+        start: 'top top',
+        end: '+=100%',
+        pin: false,
+        markers: false
+    });
+
+    // Input section - staggered reveal with parallax
+    gsap.from('.input-group', {
+        scrollTrigger: {
+            trigger: '.input-section',
+            start: 'top 75%',
+            markers: false
+        },
+        opacity: 0,
+        y: 40,
+        duration: 0.8,
+        stagger: 0.12,
+        ease: 'power2.out'
+    });
+
+    // Parallax for input section
+    gsap.to('.input-section', {
+        y: -80,
+        scrollTrigger: {
+            trigger: '.input-section',
+            start: 'top 60%',
+            end: 'bottom 0%',
+            scrub: 1.2,
+            ease: 'none',
+            markers: false
+        }
+    });
+
+    // Action button - bounce reveal
+    gsap.from('.action-section', {
+        scrollTrigger: {
+            trigger: '.action-section',
+            start: 'top 80%',
+            markers: false
+        },
+        opacity: 0,
+        scale: 0.9,
+        duration: 0.6,
+        ease: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
+    });
+
+    // Score container - pin while animating elements
+    const scoreTimeline = gsap.timeline({
+        scrollTrigger: {
+            trigger: '.score-container',
+            start: 'top 70%',
+            markers: false
+        }
+    });
+
+    // Count-up animation for score value
+    const scoreElement = document.getElementById('scoreValue');
+    if (scoreElement && scoreElement.textContent !== '0') {
+        const targetValue = parseInt(scoreElement.textContent);
+        gsap.fromTo(scoreElement,
+            { textContent: 0 },
+            {
+                textContent: targetValue,
+                duration: 0.8,
+                ease: 'power2.out',
+                snap: { textContent: 1 },
+                scrollTrigger: {
+                    trigger: '.score-container',
+                    start: 'top 70%',
+                    markers: false
+                }
+            }
+        );
+    }
+
+    // Score circle with parallax
+    const scoreCircle = document.getElementById('scoreCircle');
+    if (scoreCircle) {
+        gsap.from(scoreCircle, {
+            scrollTrigger: {
+                trigger: '.score-container',
+                start: 'top 75%',
+                markers: false
+            },
+            opacity: 0,
+            scale: 0.7,
+            duration: 1,
+            ease: 'power3.out'
+        });
+
+        gsap.to(scoreCircle, {
+            y: -40,
+            scrollTrigger: {
+                trigger: '.score-container',
+                start: 'top 50%',
+                end: 'bottom 10%',
+                scrub: 1.5,
+                ease: 'none',
+                markers: false
+            }
+        });
+    }
+
+    // Verdict badge with bounce
+    const verdictBadge = document.getElementById('verdictBadge');
+    if (verdictBadge) {
+        gsap.from(verdictBadge, {
+            scrollTrigger: {
+                trigger: '.score-container',
+                start: 'top 75%',
+                markers: false
+            },
+            opacity: 0,
+            scale: 0.5,
+            duration: 0.8,
+            delay: 0.3,
+            ease: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
+        });
+
+        gsap.to(verdictBadge, {
+            y: -40,
+            scrollTrigger: {
+                trigger: '.score-container',
+                start: 'top 50%',
+                end: 'bottom 10%',
+                scrub: 1.5,
+                ease: 'none',
+                markers: false
+            }
+        });
+    }
+
+    // Analysis cards - staggered reveal with parallax
+    const analysisCards = document.querySelectorAll('.analysis-card');
+    analysisCards.forEach((card, index) => {
+        gsap.from(card, {
+            scrollTrigger: {
+                trigger: card,
+                start: 'top 80%',
+                markers: false
+            },
+            opacity: 0,
+            y: 40,
+            scale: 0.95,
+            duration: 0.7,
+            delay: index * 0.08,
+            ease: 'power2.out'
+        });
+
+        // Different parallax speed for each card
+        gsap.to(card, {
+            y: -50 - (index * 10),
+            scrollTrigger: {
+                trigger: card,
+                start: 'top 70%',
+                end: 'bottom 20%',
+                scrub: 0.8 + (index * 0.15),
+                ease: 'none',
+                markers: false
+            }
+        });
+    });
+
+    // Suggestions container - staggered reveal
+    gsap.from('.suggestions-container', {
+        scrollTrigger: {
+            trigger: '.suggestions-container',
+            start: 'top 80%',
+            markers: false
+        },
+        opacity: 0,
+        y: 40,
+        scale: 0.95,
+        duration: 0.8,
+        ease: 'power2.out'
+    });
+
+    // Parallax for suggestions container
+    gsap.to('.suggestions-container', {
+        y: -60,
+        scrollTrigger: {
+            trigger: '.suggestions-container',
+            start: 'top 65%',
+            end: 'bottom 10%',
+            scrub: 1.1,
+            ease: 'none',
+            markers: false
+        }
+    });
+
+    // Suggestion items - staggered reveal with parallax
+    const suggestionItems = document.querySelectorAll('.suggestion-item');
+    suggestionItems.forEach((item, index) => {
+        gsap.from(item, {
+            scrollTrigger: {
+                trigger: item,
+                start: 'top 85%',
+                markers: false
+            },
+            opacity: 0,
+            x: -30,
+            duration: 0.6,
+            delay: index * 0.05,
+            ease: 'power2.out'
+        });
+
+        // Variable speed parallax for depth
+        gsap.to(item, {
+            y: -35 - (index * 8),
+            x: 10,
+            scrollTrigger: {
+                trigger: item,
+                start: 'top 70%',
+                end: 'bottom 20%',
+                scrub: 0.6 + (index * 0.1),
+                ease: 'none',
+                markers: false
+            }
+        });
+    });
+
+    // Results section heading with text reveal
+    const resultsHeading = document.querySelector('.results-section h2');
+    if (resultsHeading) {
+        gsap.from(resultsHeading, {
+            scrollTrigger: {
+                trigger: '.results-section',
+                start: 'top 75%',
+                markers: false
+            },
+            opacity: 0,
+            y: 40,
+            duration: 0.8,
+            ease: 'power3.out'
+        });
+
+        gsap.to(resultsHeading, {
+            y: -50,
+            scrollTrigger: {
+                trigger: '.results-section',
+                start: 'top 55%',
+                end: 'bottom 15%',
+                scrub: 1.3,
+                ease: 'none',
+                markers: false
+            }
+        });
+    }
+}
+
 // Apply fade-in animations to elements
 function initScrollAnimations() {
     const animatedElements = document.querySelectorAll('.analysis-card, .suggestions-container');
@@ -62,6 +349,12 @@ function initScrollAnimations() {
         el.style.transitionDelay = `${index * 100}ms`;
         el.classList.add('fade-in-element');
         fadeInObserver.observe(el);
+    });
+    
+    // Apply scroll reveal to scroll-reveal elements
+    const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
+    scrollRevealElements.forEach(el => {
+        scrollRevealObserver.observe(el);
     });
 }
 
@@ -220,8 +513,10 @@ function displayResults(data) {
     hideLoading();
     resultsSection.classList.remove('hidden');
     
-    // Initialize scroll animations
+    // Re-initialize GSAP animations for newly visible elements
     setTimeout(() => {
+        ScrollTrigger.refresh();
+        initGsapAnimations();
         initScrollAnimations();
     }, 100);
     
@@ -308,6 +603,11 @@ resumeTextarea.addEventListener('input', hideError);
 
 // Initialize theme and default UI state
 initTheme();
+
+// Initialize GSAP animations on page load
+window.addEventListener('load', () => {
+    initGsapAnimations();
+});
 
 // Initialize - hide results on page load
 resultsSection.classList.add('hidden');

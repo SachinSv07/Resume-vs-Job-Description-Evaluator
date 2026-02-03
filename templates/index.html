@@ -3,24 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume vs Job Description Evaluator</title>
+    <title>FitMatch - AI Resume & Job Evaluator</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
+        <!-- Hero Landing Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">FitMatchAI</h1>
+                <p class="hero-tagline">Intelligent resume-to-job matching powered by AI</p>
+                <p class="hero-cta">Scroll to get started</p>
+            </div>
+        </section>
+
         <!-- Header -->
         <header>
             <div class="header-top">
-                <h1>Resume vs Job Description Evaluator</h1>
+                <h1>FitMatch</h1>
                 <button id="themeToggle" class="theme-toggle" type="button" aria-pressed="false">
                     Dark mode
                 </button>
             </div>
-            <p class="subtitle">AI-powered candidate evaluation using semantic similarity analysis</p>
         </header>
 
         <!-- Input Section -->
-        <div class="input-section">
+        <div class="input-section scroll-reveal">
             <div class="input-group">
                 <label for="jobDescription">
                     <strong>Job Description</strong>
@@ -47,7 +55,7 @@
         </div>
 
         <!-- Action Button -->
-        <div class="action-section">
+        <div class="action-section scroll-reveal">
             <button id="evaluateBtn" class="evaluate-btn">
                 <span class="btn-text">Evaluate Fit</span>
                 <span class="btn-icon">→</span>
@@ -64,7 +72,7 @@
         <div id="errorMessage" class="error-message hidden"></div>
 
         <!-- Results Section -->
-        <div id="resultsSection" class="results-section hidden">
+        <div id="resultsSection" class="results-section hidden scroll-reveal">
             <h2>Evaluation Results</h2>
 
             <!-- Match Score -->
@@ -120,6 +128,8 @@
         </footer>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
